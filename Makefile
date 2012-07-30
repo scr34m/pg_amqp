@@ -12,6 +12,8 @@ OBJS         = src/pg_amqp.o \
 	src/librabbitmq/amqp_framing.o src/librabbitmq/amqp_mem.o src/librabbitmq/amqp_socket.o \
 	src/librabbitmq/amqp_table.o
 
+override CFLAGS_SL = -DPG_AMQP_OLD_VARS=YES
+
 PG_CONFIG    = pg_config
 PG91         = $(shell $(PG_CONFIG) --version | grep -qE " 8\.| 9\.0" && echo no || echo yes)
 

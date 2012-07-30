@@ -53,11 +53,21 @@
 #include "librabbitmq/amqp.h"
 #include "librabbitmq/amqp_framing.h"
 
+#ifdef PG_AMQP_OLD_VARS
+#define PG_AMQP_VARSIZE(x)        (VARSIZE(x) - VARHDRSZ)
+#define PG_AMQP_VARDATA(x)        (VARDATA(x))
+#define PG_AMQP_PG_GETARG_TEXT(x) (PG_GETARG_TEXT_P(x))
+#else
+#define PG_AMQP_VARSIZE(x)        (VARSIZE_ANY_EXHDR(x))
+#define PG_AMQP_VARDATA(x)        (VARDATA_ANY(x))
+#define PG_AMQP_PG_GETARG_TEXT(x) (PG_GETARG_TEXT_PP(x))
+#endif
+
 #define set_bytes_from_text(var,col) do { \
   if(!PG_ARGISNULL(col)) { \
-    text *txt = PG_GETARG_TEXT_PP(col); \
-    var.bytes = VARDATA_ANY(txt); \
-    var.len = VARSIZE_ANY_EXHDR(txt); \
+    text *txt = PG_AMQP_PG_GETARG_TEXT(col); \
+    var.bytes = PG_AMQP_VARDATA(txt); \
+    var.len = PG_AMQP_VARSIZE(txt); \
   } \
 } while(0)
 
